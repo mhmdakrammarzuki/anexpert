@@ -6,14 +6,13 @@ from handlers.start import start
 from handlers.menu import menu_command
 from handlers.sticker_generator import stiker_command
 from handlers.downloader import downloader_command, downloader_button_callback
+from handlers.debug import status_command
 from utils.storage_manager import process_pending_deletions
 
 # --- FORMATTER PENYENSOR TOKEN MUTLAK ---
 class TokenMaskFormatter(logging.Formatter):
     def format(self, record):
-        # Format pesan utuh terlebih dahulu
         original_msg = super().format(record)
-        # Ganti token dengan teks sensor di hasil akhir
         if Config.TELEGRAM_BOT_TOKEN:
             return original_msg.replace(Config.TELEGRAM_BOT_TOKEN, ':anexpert_bot')
         return original_msg
@@ -22,11 +21,9 @@ class TokenMaskFormatter(logging.Formatter):
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-# Hapus pengaturan log bawaan agar tidak terjadi cetak ganda
 if logger.hasHandlers():
     logger.handlers.clear()
 
-# Buat jalur cetak terminal yang menggunakan Formatter Penyensor
 console_handler = logging.StreamHandler()
 formatter = TokenMaskFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
@@ -51,6 +48,9 @@ def main():
     application.add_handler(CommandHandler("stiker", stiker_command))
     application.add_handler(CommandHandler("dl", downloader_command))
     
+    # Registrasi Handler Baru (Debug)
+    application.add_handler(CommandHandler("status", status_command))
+    
     # Registrasi Handler Tombol (Callback)
     application.add_handler(CallbackQueryHandler(downloader_button_callback, pattern="^dl_"))
     
@@ -69,7 +69,7 @@ def main():
         )
     else:
         logger.info("Bot 'anexpert' sedang berjalan (polling)...")
-        application.run_polling(poll_interval=15.0)
+        application.run_polling(poll_interval=30.0)
 
 if __name__ == '__main__':
     main()

@@ -12,6 +12,9 @@ async def menu_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 Maaf telat yaw :3, nih adek sediain skill yang dapat Ayah gunakan untuk sekarang:
 
 ══════════════════════
+Debug
+├ /status
+
 Fitur Umum
 ├ /menu
 ├ /stiker
@@ -22,7 +25,7 @@ Produktivitas
 └ #comingsoon
 ══════════════════════"""
     else:
-        teks_menu = """Halo ges, Anne disini :3. Sorry telat hehe... nih daftar fitur yang dapat digunakan untuk sekarang:
+        teks_menu = """Halo ges, Anne disini :3 Sorry telat hehe... nih daftar fitur yang dapat digunakan untuk sekarang:
 
 ══════════════════════
 Fitur Umum
