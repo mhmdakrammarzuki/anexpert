@@ -1,0 +1,4 @@
+# anexpert/requirements.txt
+python-telegram-bot
+Pillow
+python-dotenv

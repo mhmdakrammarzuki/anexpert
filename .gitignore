@@ -1,0 +1,17 @@
+# anexpert/.gitignore
+
+# Environment variables (SANGAT PENTING!)
+.env
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# IDE files
+.vscode/
+.idea/
