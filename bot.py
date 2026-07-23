@@ -1,10 +1,12 @@
 # anexpert/bot.py
 import logging
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, Application
 from config import Config
 from handlers.start import start
 from handlers.menu import menu_command
 from handlers.sticker_generator import stiker_command
+from handlers.downloader import downloader_command
+from utils.storage_manager import process_pending_deletions
 
 # --- FORMATTER PENYENSOR TOKEN MUTLAK ---
 class TokenMaskFormatter(logging.Formatter):
@@ -30,12 +32,16 @@ formatter = TokenMaskFormatter('%(asctime)s - %(name)s - %(levelname)s - %(messa
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
+async def on_startup(application: Application):
+    await process_pending_deletions(application)
+
 def main():
     application = (
         ApplicationBuilder()
         .token(Config.TELEGRAM_BOT_TOKEN)
         .connect_timeout(30.0)
         .read_timeout(30.0)
+        .post_init(on_startup)
         .build()
     )
 
@@ -43,8 +49,9 @@ def main():
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("menu", menu_command))
     application.add_handler(CommandHandler("stiker", stiker_command))
+    application.add_handler(CommandHandler("dl", downloader_command))
     application.add_handler(MessageHandler(
-        (filters.PHOTO | filters.Document.IMAGE) & filters.CaptionRegex(r'(?i)/stiker'), 
+        (filters.PHOTO | filters.Document.IMAGE) & filters.CaptionRegex(r'(?i)/stiker'),  
         stiker_command
     ))
 

@@ -15,6 +15,7 @@ Maaf telat yaw :3, nih adek sediain skill yang dapat Ayah gunakan untuk sekarang
 Fitur Umum
 ├ /menu
 ├ /stiker
+├ /dl
 └ #comingsoon
 
 Produktivitas
@@ -27,6 +28,7 @@ Produktivitas
 Fitur Umum
 ├ /menu
 ├ /stiker
+├ /dl
 └ #comingsoon
 
 Produktivitas

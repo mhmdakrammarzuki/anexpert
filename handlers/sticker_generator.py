@@ -4,6 +4,7 @@ from telegram import Update
 from telegram.constants import ChatAction
 from telegram.ext import ContextTypes
 from utils.image_processing import generate_brat_sticker, convert_image_to_sticker
+from utils.storage_manager import schedule_deletion
 from config import Config
 
 async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -29,7 +30,8 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await photo_file.download_to_memory(out=bio_in)
             
             sticker_bio = convert_image_to_sticker(bio_in.getvalue())
-            await update.message.reply_sticker(sticker=sticker_bio)
+            sent_msg = await update.message.reply_sticker(sticker=sticker_bio)
+            schedule_deletion(context, sent_msg.chat_id, sent_msg.message_id)
             return True
 
         if update.message.reply_to_message:
@@ -38,12 +40,14 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if update.message.reply_to_message.text:
                 text = update.message.reply_to_message.text
                 sticker_bio = generate_brat_sticker(text)
-                await update.message.reply_sticker(sticker=sticker_bio)
+                sent_msg = await update.message.reply_sticker(sticker=sticker_bio)
+                schedule_deletion(context, sent_msg.chat_id, sent_msg.message_id)
                 return
             if update.message.reply_to_message.caption:
                 text = update.message.reply_to_message.caption
                 sticker_bio = generate_brat_sticker(text)
-                await update.message.reply_sticker(sticker=sticker_bio)
+                sent_msg = await update.message.reply_sticker(sticker=sticker_bio)
+                schedule_deletion(context, sent_msg.chat_id, sent_msg.message_id)
                 return
 
         if await process_and_send_image(update.message):
@@ -59,7 +63,8 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if text:
             sticker_bio = generate_brat_sticker(text)
-            await update.message.reply_sticker(sticker=sticker_bio)
+            sent_msg = await update.message.reply_sticker(sticker=sticker_bio)
+            schedule_deletion(context, sent_msg.chat_id, sent_msg.message_id)
             return
 
         if is_ayah:
