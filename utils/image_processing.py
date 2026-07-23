@@ -41,7 +41,7 @@ def generate_brat_sticker(text: str) -> io.BytesIO:
         
         # Uji semua kemungkinan panjang baris
         for w in range(1, len(text) + 2):
-            wrapped = textwrap.fill(text, width=w)
+            wrapped = textwrap.fill(text, width=w, break_long_words=False)
             lines = wrapped.split('\n')
             
             max_line_w = 0
