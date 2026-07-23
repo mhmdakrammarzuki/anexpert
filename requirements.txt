@@ -1,4 +1,12 @@
-# anexpert/requirements.txt
-python-telegram-bot
-Pillow
-python-dotenv
+anyio==4.14.2
+APScheduler==3.11.3
+certifi==2026.7.22
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna==3.18
+pillow==12.3.0
+python-dotenv==1.2.2
+python-telegram-bot==22.8
+tzlocal==5.4.4
+yt-dlp==2026.7.4

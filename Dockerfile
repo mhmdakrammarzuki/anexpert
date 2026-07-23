@@ -1,15 +1,16 @@
-# anexpert/Dockerfile
-FROM python:3.11-slim
+FROM python:3.10-slim
 
 # Set zona waktu dan working directory
 ENV TZ=Asia/Makassar
 WORKDIR /app
 
-# Install pustaka sistem yang dibutuhkan oleh Pillow (Manipulasi Gambar)
+# Install pustaka sistem yang dibutuhkan oleh Pillow (Manipulasi Gambar) & Fitur Downloader (yt-dlp)
 RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     zlib1g-dev \
     libfreetype6-dev \
+    ffmpeg \
+    nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Salin daftar pustaka dan install

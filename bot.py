@@ -1,11 +1,11 @@
 # anexpert/bot.py
 import logging
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, Application
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters, Application
 from config import Config
 from handlers.start import start
 from handlers.menu import menu_command
 from handlers.sticker_generator import stiker_command
-from handlers.downloader import downloader_command
+from handlers.downloader import downloader_command, downloader_button_callback
 from utils.storage_manager import process_pending_deletions
 
 # --- FORMATTER PENYENSOR TOKEN MUTLAK ---
@@ -50,6 +50,10 @@ def main():
     application.add_handler(CommandHandler("menu", menu_command))
     application.add_handler(CommandHandler("stiker", stiker_command))
     application.add_handler(CommandHandler("dl", downloader_command))
+    
+    # Registrasi Handler Tombol (Callback)
+    application.add_handler(CallbackQueryHandler(downloader_button_callback, pattern="^dl_"))
+    
     application.add_handler(MessageHandler(
         (filters.PHOTO | filters.Document.IMAGE) & filters.CaptionRegex(r'(?i)/stiker'),  
         stiker_command
