@@ -4,15 +4,18 @@ from telegram import Update
 from telegram.constants import ChatAction
 from telegram.ext import ContextTypes
 from utils.image_processing import generate_brat_sticker, convert_image_to_sticker
+from config import Config
 
 async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    is_ayah = Config.AYAH_USERNAME and user.username == Config.AYAH_USERNAME
+
     await context.bot.send_chat_action(
         chat_id=update.effective_chat.id, 
         action=ChatAction.CHOOSE_STICKER
     )
 
     try:
-        # FUNGSI INTERNAL: Memproses dan mengunduh gambar dengan aman
         async def process_and_send_image(message):
             if message.photo:
                 file_id = message.photo[-1].file_id
@@ -29,7 +32,6 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_sticker(sticker=sticker_bio)
             return True
 
-        # KASUS 1: Reply pesan (Gambar atau Teks)
         if update.message.reply_to_message:
             if await process_and_send_image(update.message.reply_to_message):
                 return
@@ -44,20 +46,15 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await update.message.reply_sticker(sticker=sticker_bio)
                 return
 
-        # KASUS 2: Pesan berupa Gambar/Dokumen yang memiliki caption "/stiker"
-        # Karena bot.py sudah menyaringnya, fungsi ini pasti akan memproses gambarnya!
         if await process_and_send_image(update.message):
             return
 
-        # KASUS 3: Perintah berupa teks langsung (contoh: /stiker halo)
         text = ""
         if context.args:
             text = " ".join(context.args)
         elif update.message.text:
-            # Hapus perintah /stiker dari teks
             text = update.message.text.lower().replace('/stiker', '').strip()
         elif update.message.caption:
-            # Hapus perintah /stiker dari caption (berjaga-jaga jika lolos dari Kasus 2)
             text = update.message.caption.lower().replace('/stiker', '').strip()
 
         if text:
@@ -65,15 +62,28 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_sticker(sticker=sticker_bio)
             return
 
-        # JIKA SEMUANYA KOSONG
-        pesan_bantuan = (
-            "Ayah, kirimkan sesuatu untuk dijadikan stiker yaw!\n"
-            "Caranya:\n"
-            "1. Ketik `/stiker [teks]`\n"
-            "2. Kirim gambar, lalu tulis `/stiker` di caption-nya.\n"
-            "3. Reply/Balas gambar atau teks dengan pesan `/stiker`."
-        )
+        if is_ayah:
+            pesan_bantuan = (
+                "Ayah harus kirimin dulu sesuatu untuk dijadikan stiker yaw -.-\n\n"
+                "Caranya:\n"
+                "1. Ketik `/stiker [teks]`\n"
+                "2. Kirim gambar, lalu ketik `/stiker` di caption-nya\n"
+                "3. Reply / balas gambar atau teks dengan pesan `/stiker`\n\n"
+                "Jan lupa Yah, berikan Anne jajan sesekali atas kerja kerasnya :v"
+            )
+        else:
+            pesan_bantuan = (
+                "Kirimkan sesuatu untuk dijadikan stiker\n\n"
+                "Caranya:\n"
+                "1. Ketik `/stiker [teks]`\n"
+                "2. Kirim gambar, lalu ketik `/stiker` di caption-nya\n"
+                "3. Reply / balas gambar atau teks dengan pesan `/stiker`"
+            )
         await update.message.reply_text(pesan_bantuan, parse_mode="Markdown")
 
     except Exception as e:
-        await update.message.reply_text(f"M-maaf Ayah, Anne bingung... Ada error teknis: `{str(e)}`", parse_mode="Markdown")
+        if is_ayah:
+            error_msg = f"M-maaf Ayah, Anne agak bingung (╥﹏╥)... Error teknis: `{str(e)}`"
+        else:
+            error_msg = "Maaf nih yek, Anne lagi ngantuk nih ( ͡° ᴥ ͡°)﻿... Coba lagi nanti yaw!"
+        await update.message.reply_text(error_msg, parse_mode="Markdown")

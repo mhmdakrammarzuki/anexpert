@@ -8,8 +8,8 @@ async def menu_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     is_ayah = Config.AYAH_USERNAME and user.username == Config.AYAH_USERNAME
 
     if is_ayah:
-        teks_menu = """Ni hao, Ayah! Anne hadir.  (｡•̀ᴗ•́)✧
-Maaf telat yaw, nih daftar fitur yang dapat Ayah gunakan untuk sekarang:
+        teks_menu = """Ni hao, Ayah! Anne hadir  (｡•̀ᴗ•́)✧
+Maaf telat yaw :3, nih adek sediain skill yang dapat Ayah gunakan untuk sekarang:
 
 ══════════════════════
 Fitur Umum
@@ -18,13 +18,10 @@ Fitur Umum
 └ #comingsoon
 
 Produktivitas
-├ /jadwal
-├ /lihatJadwal
 └ #comingsoon
 ══════════════════════"""
     else:
-        teks_menu = """Ni hao! Anne hadir. (˶ˆ ˆ˵)
-Maaf telat yaw, ini daftar fitur yang dapat kamu gunakan untuk sekarang:
+        teks_menu = """Halo ges, Anne disini :3. Sorry telat hehe... nih daftar fitur yang dapat digunakan untuk sekarang:
 
 ══════════════════════
 Fitur Umum
@@ -33,8 +30,6 @@ Fitur Umum
 └ #comingsoon
 
 Produktivitas
-├ /jadwal
-├ /lihatJadwal
 └ #comingsoon
 ══════════════════════"""
 
