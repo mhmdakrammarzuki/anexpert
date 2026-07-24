@@ -44,7 +44,7 @@ async def downloader_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     if is_ayah:
-        msg = "Ayah mau download sebagai apa nih? \(°^°)/"
+        msg = r"Ayah mau download sebagai apa nih? \(°^°)/"
     else:
         msg = "Pilih format unduhannya yah~"
         
