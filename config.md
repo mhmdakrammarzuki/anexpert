@@ -1,112 +1,121 @@
 # Konfigurasi Bot Anexpert
 
 ## 1. Ringkasan Proyek
-Bot Anexpert adalah asisten Telegram yang dirancang untuk membantu pengguna dalam aktivitas harian dengan fokus pada pengalaman yang ramah, konsisten, dan mudah dipahami. Proyek ini dibuat dengan pendekatan yang scalable, aman, enak dilihat, dan mudah dikelola.
+Bot Anexpert adalah bot Telegram yang dibangun dengan Python dan library python-telegram-bot. Bot ini fokus pada interaksi yang ramah, personal, dan mudah dipahami, dengan fitur utama untuk membantu pengguna dalam mengolah teks, membuat sticker, serta mengunduh media.
 
-## 2. Seluruh Isi dan Fitur Bot
+## 2. Struktur Proyek
+Proyek ini terdiri dari beberapa bagian utama:
+- bot.py
+  - entry point utama bot.
+  - mengatur handler, polling/webhook, dan startup logic.
+- config.py
+  - memuat konfigurasi dari environment seperti token bot dan username admin.
+- handlers/
+  - start.py: menangani perintah /start.
+  - menu.py: menangani perintah /menu.
+  - sticker_generator.py: menangani fitur pembuatan sticker (alias `/stiker` dan `/sticker`).
+  - downloader.py: menangani fitur unduh media.
+  - debug.py: menangani perintah `/status`, `/health`, `/uptime`, dan `/info`.
+- utils/
+  - image_processing.py: menghasilkan sticker dari teks atau gambar.
+  - storage_manager.py: mengatur penghapusan pesan otomatis dan penyimpanan pending deletion.
 
-### Fitur Utama
-- /start
-  - Menampilkan salam pembuka untuk pengguna baru.
-  - Memberikan pengalaman personal yang berbeda untuk admin dan user.
+## 3. Fitur yang Aktif Saat Ini
 
-- /menu
-  - Menampilkan daftar fitur yang tersedia.
-  - Menyajikan informasi secara terstruktur dan rapi.
+### /start
+- Menampilkan salam pembuka saat pengguna mulai berinteraksi dengan bot.
+- Jika pengguna adalah admin yang ditentukan lewat AYAH_USERNAME, bot memberikan respons yang lebih personal dan hangat.
 
-- /stiker
-  - Mengubah teks atau gambar menjadi sticker.
-  - Mendukung penggunaan melalui:
-    - teks langsung
-    - gambar yang dikirim bersama caption /stiker
-    - reply terhadap teks atau gambar
+### /menu
+- Menampilkan daftar fitur yang tersedia saat ini.
+- Digunakan sebagai panduan navigasi awal bagi pengguna.
 
-- /dl [link]
-  - Mengunduh media dari URL yang diberikan.
-  - Menyediakan pilihan format:
-    - video / MP4
-    - audio / MP3
-  - Mendukung pengunduhan dengan batasan ukuran yang wajar.
+-### /stiker (/sticker)
+- Memungkinkan pengguna membuat sticker dari:
+  - teks yang dikirim langsung
+  - gambar yang dikirim dengan caption `/stiker` atau `/sticker`
+  - reply terhadap gambar atau teks
+- Jika input berupa gambar, bot akan mengubah gambar menjadi sticker webp.
+- Jika input berupa teks, bot akan membuat sticker visual dari teks tersebut.
 
-- /status
-  - Fitur debug untuk memeriksa status sistem.
-  - Digunakan untuk kebutuhan administrasi dan pemeliharaan.
+### /dl [link]
+- Memungkinkan pengguna mengunduh media dari URL.
+- Setelah link dikirim, bot menampilkan pilihan format:
+  - video / MP4
+  - audio / MP3
+- Proses unduhan dilakukan dengan yt-dlp dan file hasil unduhan akan dibersihkan setelah beberapa saat.
 
-### Karakteristik Fitur
-- Semua fitur harus bekerja secara konsisten.
+### Debug Commands
+- `/status`: fitur debug sederhana untuk memeriksa status bot (admin only).
+- `/health`: cek health/readability bot dan konektivitas (admin only).
+- `/uptime`: menampilkan lama bot berjalan sejak start (admin only).
+- `/info`: menampilkan informasi runtime (Python, platform, versi library) (admin only).
+
+## 4. Aturan Balasan Bot
+Balasan bot tidak boleh dimodifikasi secara bebas oleh pihak lain maupun oleh proses otomatis lain. Semua respon harus tetap konsisten dengan karakter yang sudah dibangun.
+
+### Prinsip utama
 - Respons bot harus tetap sopan, jelas, dan mudah dipahami.
-- Setiap fitur harus dirancang agar tidak mengubah makna komunikasi secara berlebihan.
+- Gaya bahasa tidak boleh berubah drastis dari satu fitur ke fitur lain.
+- Balasan tidak boleh menjadi kasar, ambigu, atau terlalu formal sehingga mengurangi kenyamanan pengguna.
 
-## 3. Aturan Balasan Bot
-
-### Prinsip Utama
-- Balasan bot tidak boleh dimodifikasi secara bebas oleh pihak lain maupun AI.
-- Seluruh respons bot harus tetap konsisten dengan karakter dan gaya yang telah ditetapkan.
-- Balasan tidak boleh diubah menjadi kasar, ambigu, atau terlalu santai sehingga mengurangi kualitas pengalaman pengguna.
-
-### Ketentuan Balasan
-- Balasan bot harus tetap bersifat ramah, profesional, dan menyenangkan.
-- Bot tidak boleh mengubah nada komunikasi secara tiba-tiba.
-- Semua pesan harus tetap mudah dibaca dan tidak membingungkan.
-
-## 4. Perbedaan Respons Admin dan User
+## 5. Perbedaan Respons Admin dan User
 
 ### Admin
-- Bot harus memperlakukan admin dengan sikap yang lebih hangat, hormat, dan personal.
-- Respons admin boleh lebih lembut, eksklusif, dan penuh perhatian.
-- Contoh karakteristik:
+- Bot memperlakukan admin dengan sikap yang lebih hangat, personal, dan hormat.
+- Respons admin cenderung lebih lembut dan penuh perhatian.
+- Karakter yang diutamakan:
   - sopan
-  - penuh rasa hormat
-  - hangat
   - suportif
+  - hangat
+  - penuh rasa hormat
 
 ### User
-- Bot harus memperlakukan user dengan sikap ramah, terbuka, dan membantu.
-- Respons user harus tetap friendly namun tidak terlalu personal.
-- Contoh karakteristik:
+- Bot memperlakukan user dengan sikap ramah, terbuka, dan membantu.
+- Respons user harus tetap friendly, jelas, dan tidak kaku.
+- Karakter yang diutamakan:
   - ramah
   - membantu
-  - jelas
-  - tidak kaku
+  - mudah dipahami
+  - nyaman untuk diajak berinteraksi
 
-## 5. Sikap dan Sifat Bot
+## 6. Sikap dan Sifat Bot
+Bot Anexpert diharapkan memiliki sifat berikut:
+- ramah
+- sopan
+- menyenangkan, namun tetap profesional
+- responsif
+- konsisten
+- mudah dipahami
+- nyaman untuk berinteraksi
 
-Bot Anexpert harus memiliki sifat berikut:
-- Ramah
-- Sopan
-- Lucu dan menyenangkan, namun tetap profesional
-- Responsif
-- Tidak membingungkan
-- Menyenangkan untuk diajak berinteraksi
-- Menjaga suasana komunikasinya tetap nyaman
+## 7. Konfigurasi dan Environment
+Bot menggunakan file environment untuk konfigurasi penting, seperti:
+- TELEGRAM_BOT_TOKEN: token bot Telegram
+- AYAH_USERNAME: username akun yang diperlakukan sebagai admin khusus
+- USE_WEBHOOK: apakah bot dijalankan dengan webhook
+- WEBHOOK_URL: URL webhook jika digunakan
+- PORT: port untuk webhook
 
-## 6. Prinsip Arsitektur dan Pengembangan
+## 8. Prinsip Pengembangan
 
 ### Scalable
-- Struktur kode harus mudah dikembangkan untuk fitur baru di masa depan.
-- Pemisahan handler, utilitas, dan logika bisnis harus jelas.
-- Penambahan fitur baru tidak boleh membuat sistem menjadi sulit dipelihara.
+- Struktur kode dibuat agar fitur baru dapat ditambahkan dengan lebih mudah.
+- Handler dipisahkan per modul agar lebih rapi dan terorganisir.
 
 ### Secure
-- Hindari penyimpanan token atau data sensitif secara sembarangan.
-- Gunakan konfigurasi yang aman dan terpisah.
-- Pastikan proses pengunduhan dan penyimpanan file tetap aman dan terkontrol.
+- Token dan konfigurasi sensitif tidak boleh disimpan sembarangan.
+- Proses pengunduhan dan penghapusan file harus tetap terkontrol.
 
 ### Enak Dilihat
-- Output bot harus terstruktur dengan rapi.
-- Pesan yang dikirim harus mudah dibaca dan memiliki format yang konsisten.
-- Penggunaan menu, pembagian fitur, dan gaya bahasa harus nyaman dilihat.
+- Pesan bot dibuat agar rapi, mudah dibaca, dan konsisten.
+- Format menu dan respons disusun agar nyaman dipandang.
 
 ### Mudah Dipahami
-- Bahasa yang digunakan harus sederhana dan jelas.
-- Tidak boleh ada pesan yang terlalu teknis tanpa penjelasan.
-- Pengguna harus dengan cepat memahami apa yang bisa dilakukan bot.
+- Bahasa yang digunakan sederhana dan tidak bertele-tele.
+- Pengguna dapat langsung memahami apa yang bisa dilakukan bot.
 
-## 7. Standar Implementasi
-- Semua fitur harus terorganisir dengan baik dalam modul yang terpisah.
-- Penamaan fungsi dan handler harus jelas.
-- Komunikasi bot harus tetap konsisten antara satu fitur dengan fitur lainnya.
-- Perubahan pada respons bot harus dilakukan dengan hati-hati agar tidak merusak karakter yang sudah dibangun.
-
-## 8. Kesimpulan
-Bot Anexpert dirancang sebagai asisten Telegram yang tidak hanya fungsional, tetapi juga nyaman, aman, dan menyenangkan untuk digunakan. Fokus utamanya adalah memberikan pengalaman interaksi yang konsisten, personal sesuai peran pengguna, dan tetap mudah dipahami oleh siapapun.
+## 9. Catatan Implementasi
+- Bot saat ini masih fokus pada fitur dasar yang sudah berjalan.
+- Fitur yang terlihat sebagai #comingsoon di menu belum diimplementasikan secara penuh.
+- Perubahan pada respons bot perlu dilakukan dengan hati-hati agar karakter dan nuansa bot tetap terjaga.

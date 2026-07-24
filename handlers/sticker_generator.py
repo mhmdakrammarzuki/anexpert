@@ -57,9 +57,9 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if context.args:
             text = " ".join(context.args)
         elif update.message.text:
-            text = update.message.text.lower().replace('/stiker', '').strip()
+            text = update.message.text.lower().replace('/stiker', '').replace('/sticker', '').strip()
         elif update.message.caption:
-            text = update.message.caption.lower().replace('/stiker', '').strip()
+            text = update.message.caption.lower().replace('/stiker', '').replace('/sticker', '').strip()
 
         if text:
             sticker_bio = generate_brat_sticker(text)
@@ -71,18 +71,18 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             pesan_bantuan = (
                 "Ayah harus kirimin dulu sesuatu untuk dijadikan stiker yaw -.-\n\n"
                 "Caranya:\n"
-                "1. Ketik `/stiker [teks]`\n"
-                "2. Kirim gambar, lalu ketik `/stiker` di caption-nya\n"
-                "3. Reply / balas gambar atau teks dengan pesan `/stiker`\n\n"
+                "1. Ketik `/stiker [teks]` atau `/sticker [text]`\n"
+                "2. Kirim gambar, lalu ketik `/stiker` atau `/sticker` di caption-nya\n"
+                "3. Reply / balas gambar atau teks dengan pesan `/stiker` atau `/sticker`\n\n"
                 "Jan lupa Yah, berikan Anne jajan sesekali atas kerja kerasnya :v"
             )
         else:
             pesan_bantuan = (
                 "Kirimkan sesuatu untuk dijadikan stiker\n\n"
                 "Caranya:\n"
-                "1. Ketik `/stiker [teks]`\n"
-                "2. Kirim gambar, lalu ketik `/stiker` di caption-nya\n"
-                "3. Reply / balas gambar atau teks dengan pesan `/stiker`"
+                "1. Ketik `/stiker [teks]` atau `/sticker [text]`\n"
+                "2. Kirim gambar, lalu ketik `/stiker` atau `/sticker` di caption-nya\n"
+                "3. Reply / balas gambar atau teks dengan pesan `/stiker` atau `/sticker`"
             )
         await update.message.reply_text(pesan_bantuan, parse_mode="Markdown")
 

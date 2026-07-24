@@ -6,7 +6,8 @@ from handlers.start import start
 from handlers.menu import menu_command
 from handlers.sticker_generator import stiker_command
 from handlers.downloader import downloader_command, downloader_button_callback
-from handlers.debug import status_command
+from handlers.debug import status_command, health_command, uptime_command, info_command
+import time
 from utils.storage_manager import process_pending_deletions
 
 # --- FORMATTER PENYENSOR TOKEN MUTLAK ---
@@ -30,6 +31,8 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
 async def on_startup(application: Application):
+    # record bot start time for uptime reporting
+    application.bot_data['start_time'] = time.time()
     await process_pending_deletions(application)
 
 def main():
@@ -46,16 +49,21 @@ def main():
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("menu", menu_command))
     application.add_handler(CommandHandler("stiker", stiker_command))
+    # English alias for sticker
+    application.add_handler(CommandHandler("sticker", stiker_command))
     application.add_handler(CommandHandler("dl", downloader_command))
     
     # Registrasi Handler Baru (Debug)
     application.add_handler(CommandHandler("status", status_command))
+    application.add_handler(CommandHandler("health", health_command))
+    application.add_handler(CommandHandler("uptime", uptime_command))
+    application.add_handler(CommandHandler("info", info_command))
     
     # Registrasi Handler Tombol (Callback)
     application.add_handler(CallbackQueryHandler(downloader_button_callback, pattern="^dl_"))
     
     application.add_handler(MessageHandler(
-        (filters.PHOTO | filters.Document.IMAGE) & filters.CaptionRegex(r'(?i)/stiker'),  
+        (filters.PHOTO | filters.Document.IMAGE) & filters.CaptionRegex(r'(?i)/sticker'),  
         stiker_command
     ))
 

@@ -1,9 +1,7 @@
-# anexpert/.gitignore
-
-# Environment variables (SANGAT PENTING!)
+# Environment variables
 .env
 
-# Python cache & virtual environments
+# Python cache and virtual environments
 __pycache__/
 *.py[cod]
 *$py.class
@@ -12,6 +10,11 @@ venv/
 ENV/
 env/
 
-# IDE files
+# Bot runtime artifacts
+downloads/
+pending_deletions.json
+*.log
+
+# IDE/editor folders
 .vscode/
 .idea/

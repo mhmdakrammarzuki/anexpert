@@ -14,10 +14,13 @@ Maaf telat yaw :3, nih adek sediain skill yang dapat Ayah gunakan untuk sekarang
 ══════════════════════
 Debug
 ├ /status
+├ /health
+├ /uptime
+├ /info
 
 Fitur Umum
 ├ /menu
-├ /stiker
+├ /stiker (/sticker)
 ├ /dl
 └ #comingsoon
 
@@ -30,7 +33,7 @@ Produktivitas
 ══════════════════════
 Fitur Umum
 ├ /menu
-├ /stiker
+├ /stiker (/sticker)
 ├ /dl
 └ #comingsoon
 
