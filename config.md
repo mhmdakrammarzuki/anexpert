@@ -1,121 +1,51 @@
-# Konfigurasi Bot Anexpert
+# Blueprints Arsitektur Sistem Hibrida Universal (Node.js + Go)
 
-## 1. Ringkasan Proyek
-Bot Anexpert adalah bot Telegram yang dibangun dengan Python dan library python-telegram-bot. Bot ini fokus pada interaksi yang ramah, personal, dan mudah dipahami, dengan fitur utama untuk membantu pengguna dalam mengolah teks, membuat sticker, serta mengunduh media.
+Dokumen ini mendefinisikan standar arsitektur, batas tanggung jawab komponen, strategi skalabilitas, dan protokol keamanan untuk sistem bot berbasis hibrida. Cetak biru ini dirancang secara universal agar mesin atau AI dapat melakukan penalaran (reasoning) dalam menentukan penempatan fitur berdasarkan karakteristik beban kerja.
 
-## 2. Struktur Proyek
-Proyek ini terdiri dari beberapa bagian utama:
-- bot.py
-  - entry point utama bot.
-  - mengatur handler, polling/webhook, dan startup logic.
-- config.py
-  - memuat konfigurasi dari environment seperti token bot dan username admin.
-- handlers/
-  - start.py: menangani perintah /start.
-  - menu.py: menangani perintah /menu.
-  - sticker_generator.py: menangani fitur pembuatan sticker (alias `/stiker` dan `/sticker`).
-  - downloader.py: menangani fitur unduh media.
-  - debug.py: menangani perintah `/status`, `/health`, `/uptime`, dan `/info`.
-- utils/
-  - image_processing.py: menghasilkan sticker dari teks atau gambar.
-  - storage_manager.py: mengatur penghapusan pesan otomatis dan penyimpanan pending deletion.
+---
 
-## 3. Fitur yang Aktif Saat Ini
+## 1. Pemisahan Peran Berdasarkan Karakteristik Beban Kerja
 
-### /start
-- Menampilkan salam pembuka saat pengguna mulai berinteraksi dengan bot.
-- Jika pengguna adalah admin yang ditentukan lewat AYAH_USERNAME, bot memberikan respons yang lebih personal dan hangat.
+Sistem memisahkan tugas menjadi dua kategori utama untuk mengoptimalkan pemanfaatan sumber daya server (CPU dan RAM).
 
-### /menu
-- Menampilkan daftar fitur yang tersedia saat ini.
-- Digunakan sebagai panduan navigasi awal bagi pengguna.
+### 🌐 Node.js: Komponen Gateway & Manajemen I/O (Input/Output Bound)
+Node.js bertindak sebagai lapisan terdepan yang menangani seluruh komunikasi jaringan yang bersifat asinkronus dan berbasis peristiwa (*event-driven*).
+* **Kriteria Tugas**: Operasi yang membutuhkan latensi jaringan rendah, manajemen koneksi simultan skala besar, manipulasi teks ringan, integrasi API pihak ketiga, dan manajemen status (*state/session*).
+* **Sifat Beban Kerja**: Tinggi di aktivitas I/O, rendah di penggunaan CPU. Menangani logika bisnis makro dan alur kendali utama aplikasi.
 
--### /stiker (/sticker)
-- Memungkinkan pengguna membuat sticker dari:
-  - teks yang dikirim langsung
-  - gambar yang dikirim dengan caption `/stiker` atau `/sticker`
-  - reply terhadap gambar atau teks
-- Jika input berupa gambar, bot akan mengubah gambar menjadi sticker webp.
-- Jika input berupa teks, bot akan membuat sticker visual dari teks tersebut.
+### ⚡ Go (Golang): Komponen Eksekusi & Pemrosesan Intuitif (CPU Bound)
+Go bertindak sebagai mesin komputasi berkinerja tinggi yang mengeksekusi instruksi tingkat rendah secara paralel dan terkompilasi murni.
+* **Kriteria Tugas**: Operasi yang membutuhkan kalkulasi matematis berat, manipulasi biner/berkas mentah, rendering data, kompresi, dan tugas-tugas yang menguras siklus *clock* prosesor.
+* **Sifat Beban Kerja**: Tinggi di aktivitas CPU, membutuhkan manajemen memori (RAM) yang ketat, isolasi proses, dan skalabilitas paralelisme (*multithreading*).
 
-### /dl [link]
-- Memungkinkan pengguna mengunduh media dari URL.
-- Setelah link dikirim, bot menampilkan pilihan format:
-  - video / MP4
-  - audio / MP3
-- Proses unduhan dilakukan dengan yt-dlp dan file hasil unduhan akan dibersihkan setelah beberapa saat.
+---
 
-### Debug Commands
-- `/status`: fitur debug sederhana untuk memeriksa status bot (admin only).
-- `/health`: cek health/readability bot dan konektivitas (admin only).
-- `/uptime`: menampilkan lama bot berjalan sejak start (admin only).
-- `/info`: menampilkan informasi runtime (Python, platform, versi library) (admin only).
+## 2. Strategi Skalabilitas & Pertimbangan Fitur Baru (Scalability Decision Matrix)
 
-## 4. Aturan Balasan Bot
-Balasan bot tidak boleh dimodifikasi secara bebas oleh pihak lain maupun oleh proses otomatis lain. Semua respon harus tetap konsisten dengan karakter yang sudah dibangun.
+Ketika ada penambahan fitur baru di masa depan, sistem atau AI harus menganalisis fitur tersebut menggunakan aturan berikut untuk menentukan penempatannya:
 
-### Prinsip utama
-- Respons bot harus tetap sopan, jelas, dan mudah dipahami.
-- Gaya bahasa tidak boleh berubah drastis dari satu fitur ke fitur lain.
-- Balasan tidak boleh menjadi kasar, ambigu, atau terlalu formal sehingga mengurangi kenyamanan pengguna.
+### Aturan Penentuan Komponen
+1. **Jika Fitur Bersifat Komputasi Berat**: Wajib didelegasikan ke komponen **Go** sebagai sub-proses terisolasi atau layanan mikro (*microservice*) agar tidak mengunci (*blocking*) thread utama.
+2. **Jika Fitur Bersifat Integrasi / Logika Chat**: Wajib ditulis di komponen **Node.js** untuk mempercepat waktu pengembangan (*time-to-market*) dan kemudahan pemeliharaan.
 
-## 5. Perbedaan Respons Admin dan User
+### Desain Arsitektur Multi-Tahap
+* **Fase Monolitik Hibrida**: Node.js memanggil komponen Go secara lokal melalui mekanisme inter-proses (`child_process / IPC`) dengan melemparkan parameter terstruktur.
+* **Fase Mikrolayanan (Microservices)**: Ketika antrean komputasi berat mulai mengganggu subsistem I/O, komunikasi antar komponen diubah menjadi arsitektur berbasis antrean pesan (*Message Broker*) atau RPC (Remote Procedure Call) yang terdistribusi di server berbeda.
 
-### Admin
-- Bot memperlakukan admin dengan sikap yang lebih hangat, personal, dan hormat.
-- Respons admin cenderung lebih lembut dan penuh perhatian.
-- Karakter yang diutamakan:
-  - sopan
-  - suportif
-  - hangat
-  - penuh rasa hormat
+---
 
-### User
-- Bot memperlakukan user dengan sikap ramah, terbuka, dan membantu.
-- Respons user harus tetap friendly, jelas, dan tidak kaku.
-- Karakter yang diutamakan:
-  - ramah
-  - membantu
-  - mudah dipahami
-  - nyaman untuk diajak berinteraksi
+## 3. Protokol Keamanan Universal (Security Blueprints)
 
-## 6. Sikap dan Sifat Bot
-Bot Anexpert diharapkan memiliki sifat berikut:
-- ramah
-- sopan
-- menyenangkan, namun tetap profesional
-- responsif
-- konsisten
-- mudah dipahami
-- nyaman untuk berinteraksi
+Keamanan sistem hibrida bertumpu pada isolasi ketat dan validasi berlapis di setiap batas komponen.
 
-## 7. Konfigurasi dan Environment
-Bot menggunakan file environment untuk konfigurasi penting, seperti:
-- TELEGRAM_BOT_TOKEN: token bot Telegram
-- AYAH_USERNAME: username akun yang diperlakukan sebagai admin khusus
-- USE_WEBHOOK: apakah bot dijalankan dengan webhook
-- WEBHOOK_URL: URL webhook jika digunakan
-- PORT: port untuk webhook
+* **Validasi di Pintu Gerbang (Gateway Isolation)**: Komponen Node.js wajib melakukan penyaringan, pembatasan ukuran data (*rate limiting*), dan validasi tipe data sebelum data mentah diteruskan ke komponen Go.
+* **Sanitasi Batas Antar Proses (IPC/CLI Sanitization)**: Pertukaran data antar bahasa tidak boleh menggunakan string bebas yang dievaluasi langsung oleh shell sistem operasi. Semua parameter wajib dilewatkan dalam bentuk larik (*array argument*) yang kaku untuk mencegah eksploitasi injeksi perintah (*Command Injection*).
+* **Isolasi Lingkungan Eksekusi**: Komponen pemroses berat harus dijalankan dengan hak akses pengguna (*user permission*) paling rendah di sistem operasi, serta dibatasi ruang lingkup akses direktorinya hanya pada folder sementara (*sandboxed temporary directory*).
+* **Abstraksi Kredensial**: Tidak ada rahasia (*secret/token*) yang ditanam di dalam kode. Seluruh konfigurasi lingkungan dimuat secara dinamis saat sistem dinyalakan melalui variabel lingkungan (*Environment Variables*).
 
-## 8. Prinsip Pengembangan
+---
 
-### Scalable
-- Struktur kode dibuat agar fitur baru dapat ditambahkan dengan lebih mudah.
-- Handler dipisahkan per modul agar lebih rapi dan terorganisir.
+## 4. Manajemen Kebersihan & Metrik (Cleanup & Telemetry)
 
-### Secure
-- Token dan konfigurasi sensitif tidak boleh disimpan sembarangan.
-- Proses pengunduhan dan penghapusan file harus tetap terkontrol.
-
-### Enak Dilihat
-- Pesan bot dibuat agar rapi, mudah dibaca, dan konsisten.
-- Format menu dan respons disusun agar nyaman dipandang.
-
-### Mudah Dipahami
-- Bahasa yang digunakan sederhana dan tidak bertele-tele.
-- Pengguna dapat langsung memahami apa yang bisa dilakukan bot.
-
-## 9. Catatan Implementasi
-- Bot saat ini masih fokus pada fitur dasar yang sudah berjalan.
-- Fitur yang terlihat sebagai #comingsoon di menu belum diimplementasikan secara penuh.
-- Perubahan pada respons bot perlu dilakukan dengan hati-hati agar karakter dan nuansa bot tetap terjaga.
+* **Siklus Hidup Data Sementara**: Komponen yang bertindak sebagai pemroses wajib memberikan sinyal balik (*callback/exit code*) yang jelas setelah tugas selesai. Komponen gateway bertanggung jawab penuh atas pembersihan sisa memori atau berkas fisik di media penyimpanan sekunder setelah proses selesai.
+* **Telemetri Terdistribusi**: Setiap komponen harus menghasilkan log yang terstandarisasi (misalnya format JSON terstruktur). Komponen komputasi wajib mencatat metrik durasi eksekusi dan efisiensi memori, sedangkan komponen gateway mencatat metrik latensi respon dan tingkat keberhasilan transaksi.
