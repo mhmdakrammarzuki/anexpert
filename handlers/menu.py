@@ -20,7 +20,7 @@ Debug
 
 Fitur Umum
 ├ /menu
-├ /stiker (/sticker)
+├ /sticker
 ├ /dl
 └ #comingsoon
 
@@ -33,7 +33,7 @@ Produktivitas
 ══════════════════════
 Fitur Umum
 ├ /menu
-├ /stiker (/sticker)
+├ /sticker
 ├ /dl
 └ #comingsoon
 

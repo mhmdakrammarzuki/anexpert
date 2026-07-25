@@ -1,3 +1,4 @@
+
 # anexpert/handlers/sticker_generator.py
 import io
 from telegram import Update
@@ -57,9 +58,9 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if context.args:
             text = " ".join(context.args)
         elif update.message.text:
-            text = update.message.text.lower().replace('/stiker', '').replace('/sticker', '').strip()
+            text = update.message.text.lower().replace('/sticker', '').strip()
         elif update.message.caption:
-            text = update.message.caption.lower().replace('/stiker', '').replace('/sticker', '').strip()
+            text = update.message.caption.lower().replace('/sticker', '').strip()
 
         if text:
             sticker_bio = generate_brat_sticker(text)
@@ -69,20 +70,20 @@ async def stiker_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if is_ayah:
             pesan_bantuan = (
-                "Ayah harus kirimin dulu sesuatu untuk dijadikan stiker yaw -.-\n\n"
+                "Ayah harus kirimin dulu sesuatu untuk dijadikan sticker yaw -.-\n\n"
                 "Caranya:\n"
-                "1. Ketik `/stiker [teks]` atau `/sticker [text]`\n"
-                "2. Kirim gambar, lalu ketik `/stiker` atau `/sticker` di caption-nya\n"
-                "3. Reply / balas gambar atau teks dengan pesan `/stiker` atau `/sticker`\n\n"
+                "1. Ketik `/sticker [teks]`\n"
+                "2. Kirim gambar, lalu ketik `/sticker` di caption-nya\n"
+                "3. Reply / balas gambar atau teks dengan pesan `/sticker`\n\n"
                 "Jan lupa Yah, berikan Anne jajan sesekali atas kerja kerasnya :v"
             )
         else:
             pesan_bantuan = (
-                "Kirimkan sesuatu untuk dijadikan stiker\n\n"
+                "Kirimkan sesuatu untuk dijadikan sticker\n\n"
                 "Caranya:\n"
-                "1. Ketik `/stiker [teks]` atau `/sticker [text]`\n"
-                "2. Kirim gambar, lalu ketik `/stiker` atau `/sticker` di caption-nya\n"
-                "3. Reply / balas gambar atau teks dengan pesan `/stiker` atau `/sticker`"
+                "1. Ketik `/sticker [teks]`\n"
+                "2. Kirim gambar, lalu ketik `/sticker` di caption-nya\n"
+                "3. Reply / balas gambar atau teks dengan pesan `/sticker`"
             )
         await update.message.reply_text(pesan_bantuan, parse_mode="Markdown")
 

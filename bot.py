@@ -48,7 +48,6 @@ def main():
     # Registrasi Handlers
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("menu", menu_command))
-    application.add_handler(CommandHandler("stiker", stiker_command))
     # English alias for sticker
     application.add_handler(CommandHandler("sticker", stiker_command))
     application.add_handler(CommandHandler("dl", downloader_command))
