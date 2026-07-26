@@ -1,50 +1,46 @@
 # Anexpert
 
-Anexpert adalah bot Telegram yang dibangun dengan Python menggunakan library python-telegram-bot. Bot ini dirancang untuk memberikan pengalaman interaksi yang ramah, konsisten, dan mudah dipahami, dengan fokus pada fitur umum, produktivitas, serta dukungan administratif.
+Anexpert adalah bot Telegram dengan arsitektur hibrida **Node.js + Go** sesuai `config.md`.
 
-## Gambaran Umum
-Anexpert cocok digunakan sebagai bot personal yang membantu pengguna dalam hal:
-- interaksi ringan melalui Telegram
-- pembuatan sticker
-- pengunduhan media
-- pemanfaatan fitur produktivitas sederhana
-- pemantauan status sistem melalui mode debug
+## Arsitektur
+- **Node.js** menjadi gateway Telegram, pengelola command, session ringan, integrasi jaringan, dan orkestrasi I/O.
+- **Go** menjadi worker CPU-bound yang dipanggil Node.js melalui `child_process` dengan argumen array terstruktur, bukan shell string bebas.
+- Seluruh teks balasan bot disimpan di `src/messages/replies.js` agar copywriting tidak tercampur dengan logika handler.
 
-## Fitur yang Tersedia
+## Fitur
+- `/start`: salam pembuka.
+- `/menu`: daftar fitur.
+- `/sticker` atau `/stiker`: membuat sticker dari teks, gambar, caption gambar, atau reply ke teks/gambar.
+- `/dl [link]`: unduh media melalui CLI `yt-dlp`.
+- `/status`, `/health`, `/uptime`, `/info`: debug admin only.
 
-### Fitur Umum
-- `/start`: salam pembuka dan penyesuaian respons untuk admin dan user.
-- `/menu`: menampilkan daftar fitur yang tersedia.
-- `/stiker` (`/sticker`): membuat sticker dari teks atau gambar.
-- `/dl [link]`: mengunduh video atau audio dari URL.
+## Format Sticker
+Worker Go mempertahankan konfigurasi sticker dari implementasi lama:
+- kanvas 512x512;
+- latar putih dan teks hitam;
+- teks dinormalisasi ke lowercase;
+- padding kiri/kanan 45px dan atas/bawah 35px;
+- auto-wrap, pemilihan susunan baris yang memenuhi batas kanvas, dan justify untuk baris selain baris terakhir;
+- efek pixelated/moldy dengan render low-res 128x128 lalu upscale nearest-neighbor ke 512x512;
+- gambar input di-resize proporsional agar muat dalam batas 512x512.
 
-### Fitur Debug
-- `/status`: pemeriksaan status sistem (admin only).
-- `/health`: cek konektivitas dan reachability bot (admin only).
-- `/uptime`: lama bot berjalan sejak start (admin only).
-- `/info`: informasi runtime (Python, platform, versi library) (admin only).
-
-## Persyaratan Sistem
-- Python 3.10+
-- pip
-- ffmpeg terinstal di sistem untuk fitur unduh audio/video
+## Persyaratan
+- Node.js 20+
+- Go 1.22+
+- `yt-dlp` dan `ffmpeg` untuk downloader
+- `fastfetch` opsional untuk `/status`
 
 ## Instalasi
-1. Salin file [.env](.env) menjadi file environment yang sesuai dan isi nilai konfigurasi.
-2. Install dependensi:
-   pip install -r requirements.txt
-3. Jalankan bot:
-   python bot.py
+```bash
+npm install
+go build -o bin/anexpert-worker ./worker/cmd/anexpert-worker
+TELEGRAM_BOT_TOKEN=... npm start
+```
 
-## Konfigurasi
-- TELEGRAM_BOT_TOKEN: token bot Telegram Anda.
-- AYAH_USERNAME: username akun yang diperlakukan sebagai admin khusus.
-- USE_WEBHOOK: aktifkan jika bot dijalankan di server publik.
-- WEBHOOK_URL: URL webhook jika digunakan.
-- PORT: port yang dipakai untuk webhook.
-
-## Catatan Pengembangan
-- Bot saat ini berjalan dengan polling secara default.
-- Jika ingin menggunakan webhook, aktifkan USE_WEBHOOK=True dan isi WEBHOOK_URL.
-- Dukungan Docker telah dihapus; proyek dijalankan langsung dari Python.
-- Struktur handler dan utilitas memudahkan penambahan fitur baru di masa depan.
+## Environment
+- `TELEGRAM_BOT_TOKEN`: token bot Telegram.
+- `AYAH_USERNAME`: username admin.
+- `USE_WEBHOOK`: `true` untuk webhook.
+- `WEBHOOK_URL`: URL webhook.
+- `PORT`: port webhook.
+- `GO_WORKER_PATH`: path binary worker Go, default `./bin/anexpert-worker`.
