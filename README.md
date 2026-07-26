@@ -10,19 +10,9 @@ Anexpert adalah bot Telegram dengan arsitektur hibrida **Node.js + Go** sesuai `
 ## Fitur
 - `/start`: salam pembuka.
 - `/menu`: daftar fitur.
-- `/sticker` atau `/stiker`: membuat sticker dari teks, gambar, caption gambar, atau reply ke teks/gambar.
+- `/sticker` atau `/stiker`: delegasi pembuatan sticker teks ke worker Go.
 - `/dl [link]`: unduh media melalui CLI `yt-dlp`.
 - `/status`, `/health`, `/uptime`, `/info`: debug admin only.
-
-## Format Sticker
-Worker Go mempertahankan konfigurasi sticker dari implementasi lama:
-- kanvas 512x512;
-- latar putih dan teks hitam;
-- teks dinormalisasi ke lowercase;
-- padding kiri/kanan 45px dan atas/bawah 35px;
-- auto-wrap, pemilihan susunan baris yang memenuhi batas kanvas, dan justify untuk baris selain baris terakhir;
-- efek pixelated/moldy dengan render low-res 128x128 lalu upscale nearest-neighbor ke 512x512;
-- gambar input di-resize proporsional agar muat dalam batas 512x512.
 
 ## Persyaratan
 - Node.js 20+
