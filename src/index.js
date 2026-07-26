@@ -6,23 +6,19 @@ import { registerDownloaderHandler } from './handlers/downloader.js';
 import { registerMenuHandler } from './handlers/menu.js';
 import { registerStartHandler } from './handlers/start.js';
 import { registerStickerHandler } from './handlers/sticker.js';
-import { StorageManager } from './services/storageManager.js';
 
 const startedAt = Date.now();
 const bot = new Telegraf(config.telegramBotToken);
-const storageManager = new StorageManager(bot.telegram);
 
 registerStartHandler(bot);
 registerMenuHandler(bot);
-registerStickerHandler(bot, storageManager);
-registerDownloaderHandler(bot, storageManager);
+registerStickerHandler(bot);
+registerDownloaderHandler(bot);
 registerDebugHandlers(bot, startedAt);
 
 bot.catch((error) => {
   console.error(JSON.stringify({ level: 'error', component: 'node-gateway', error: error.message }));
 });
-
-await storageManager.processPendingDeletions();
 
 if (config.useWebhook && config.webhookUrl) {
   await bot.launch({

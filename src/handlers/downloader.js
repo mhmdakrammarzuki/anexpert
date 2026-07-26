@@ -27,7 +27,7 @@ async function runYtDlp(url, audio) {
   return filePath;
 }
 
-export function registerDownloaderHandler(bot, storageManager) {
+export function registerDownloaderHandler(bot) {
   bot.command('dl', async (ctx) => {
     const ayah = isAyah(ctx);
     const url = ctx.message?.text?.split(/\s+/).slice(1).join(' ').trim();
@@ -74,10 +74,11 @@ export function registerDownloaderHandler(bot, storageManager) {
 
     try {
       filePath = await runYtDlp(url, audio);
-      const sentMessage = audio
-        ? await ctx.replyWithAudio({ source: createReadStream(filePath) })
-        : await ctx.replyWithVideo({ source: createReadStream(filePath) });
-      await storageManager.scheduleDeletion(sentMessage.chat.id, sentMessage.message_id);
+      if (audio) {
+        await ctx.replyWithAudio({ source: createReadStream(filePath) });
+      } else {
+        await ctx.replyWithVideo({ source: createReadStream(filePath) });
+      }
       await ctx.deleteMessage().catch(() => undefined);
     } catch (error) {
       await ctx.editMessageText(replies.downloaderError(ayah, error.message ?? error), { parse_mode: 'Markdown' });
