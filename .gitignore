@@ -1,7 +1,13 @@
 # Environment variables
 .env
 
-# Python cache and virtual environments
+# Runtime artifacts
+downloads/
+pending_deletions.json
+bin/
+*.log
+
+# Python cache from old revisions/local tooling
 __pycache__/
 *.py[cod]
 *$py.class
@@ -9,12 +15,6 @@ __pycache__/
 venv/
 ENV/
 env/
-config.md
-
-# Bot runtime artifacts
-downloads/
-pending_deletions.json
-*.log
 
 # IDE/editor folders
 .vscode/
