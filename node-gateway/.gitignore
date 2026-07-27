@@ -1,0 +1,5 @@
+node_modules/
+.env
+pending_deletions.json
+bin/processor
+bin/processor.exe

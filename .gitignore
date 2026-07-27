@@ -1,0 +1,14 @@
+# File Arsip
+anexpert-hybrid.zip
+
+# Node.js & Dependencies
+node-gateway/node_modules/
+node-gateway/.env
+
+# State & Cookies Sensitif
+node-gateway/cookies.txt
+node-gateway/pending_deletions.json
+
+# Binary Executable & Prebuilt
+go-processor/prebuilt/
+node-gateway/bin/
